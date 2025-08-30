@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday 💖</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#ffe4ec; --bg2:#fff8e7;
+      --accent:#ff5fa2; --accent2:#ff8c5f; --text:#2a2a2a; --soft:#ffffffaa;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0; font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color:var(--text);
+      background: radial-gradient(1200px 800px at 10% 10%, var(--bg1), transparent),
+                  radial-gradient(1200px 800px at 90% 10%, var(--bg2), transparent),
+                  #fff;
+      overflow-x:hidden;
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:32px 16px 80px; text-align:center; position:relative}
+    h1{
+      font-family:"Dancing Script";
+      font-size: clamp(44px, 7vw, 92px);
+      line-height:1.05; margin:16px 0 8px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow: 0 8px 24px #ff5fa233;
+    }
+    .subtitle{
+      font-size: clamp(16px, 2.8vw, 22px);
+      opacity:.9; margin-bottom:24px;
+    }
+    .type{
+      display:inline-block;  padding-right:4px; white-space:nowrap; overflow:hidden;
+      animation: caret 1s steps(1) infinite;
+    }
+    @keyframes caret{50%{border-color:transparent}}
+
+    .btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  border:none; 
+  padding:20px 28px;         /* bigger size */
+  font-size: 28px;           /* bigger emoji */
+  border-radius:18px; 
+  cursor:pointer;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color:#fff; 
+  box-shadow: 0 12px 28px #ff5fa255; 
+  transition: transform .08s ease, filter .2s ease;
+}
+
+    .btn:active{ transform: translateY(1px) scale(0.99)}
+    .btn small{opacity:.9; font-weight:400}
+
+    .card{
+      margin:24px auto; max-width:800px; background:#fff; border-radius:18px; padding:16px;
+      box-shadow: 0 20px 60px #1f16400d, 0 6px 20px #ff5fa218; backdrop-filter: blur(5px);
+      border:1px solid #0000000e;
+    }
+    .gif-stage{
+      min-height: 280px; display:grid; place-items:center; border-radius:14px; overflow:hidden;
+      background: repeating-conic-gradient(from 0deg, #fff 0 10deg, #fff7fb 10deg 20deg);
+      position:relative;
+    }
+    .gif-stage img{max-width:100%; max-height:520px; display:block}
+    .badge{
+      position:absolute; top:12px; left:12px; background:#00000080; color:#fff; border-radius:999px; padding:6px 10px; font-size:12px;
+      backdrop-filter: blur(6px);
+    }
+
+    .gallery{
+      --size:110px;
+      display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:10px;
+    }
+    .gallery .ph{
+      width:var(--size); height:var(--size); border-radius:16px; overflow:hidden; position:relative;
+      box-shadow: 0 10px 20px #00000017; transform: translateZ(0);
+      transition: transform .2s ease;
+    }
+    .gallery .ph:hover{ transform: translateY(-4px)}
+    .gallery img{width:100%; height:100%; object-fit:cover; display:block}
+
+    .tiny{
+      font-size:12px; opacity:.7; margin-top:10px
+    }
+
+    /* floating hearts */
+    .floaters{ pointer-events:none; position:fixed; inset:0; overflow:hidden }
+    .heart{ position:absolute; font-size:18px; opacity:0; animation: rise 4s linear forwards }
+    @keyframes rise{
+      0%{ transform: translateY(10vh) scale(.6) rotate(0); opacity:0 }
+      10%{ opacity:.9 }
+      100%{ transform: translateY(-100vh) scale(1.4) rotate(360deg); opacity:0 }
+    }
+
+    .inputs{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:10px 0 0
+    }
+    input[type="text"]{
+      width: min(520px, 90vw); padding:10px 12px; border-radius:10px; border:1px solid #00000022;
+      outline:none; font-size:14px;
+    }
+    .note{
+      margin-top:18px; font-size:13px; color:#5a5a5a
+    }
+    footer{ margin-top:42px; font-size:12px; opacity:.6 }
+    a{ color:#ea4a89; text-decoration:none }
+  </style>
+</head>
+<body>
+  <div class="floaters" id="floaters"></div>
+  <div class="wrap">
+    <h1 id="title">Happy Birthday <span id="name">Love</span>! 🎉</h1>
+    <div class="subtitle">
+      <span class="type" id="typeLine">Happy Birthday Bebe 🎂</span>
+    </div>
+
+    <button class="btn" id="gifBtn">💝</button>
+
+    <div class="card" style="margin-top:18px">
+      <div class="gif-stage" id="stage">
+        <div class="badge">Kenny vibes ✨</div>
+        <img id="gif" alt="Kenny GIF will appear here" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:6px 0 10px">Our Little Gallery 📸</h3>
+      <div class="gallery" id="gallery"></div>
+      <!-- <div class="inputs">
+        <input id="photoUrl" type="text" placeholder="Paste a photo URL & press Enter to add to gallery" />
+      </div> -->
+      <!-- <div class="tiny">Your photos stay only in this page on your device.</div> -->
+    </div>
+<!-- 
+    <footer>
+      Made with 💗 — customize name/message, add your photos, and you’re set.
+    </footer> -->
+  </div>
+
+  <script>
+    /*** ✨ Customize here ✨ ***/
+    const RECIPIENT_NAME = "NITIKA"; // <- her name
+    const TYPE_LINES = [
+    "Happy birthday, my love 🎂",
+  "Today is all about you ✨",
+  "May all your wishes come true 💫",
+  "Another year more beautiful, more amazing, more YOU 🌹",
+  "Cheers to you and all the love you bring 🥂",
+  "Forever grateful you were born 💖",
+  "You’re my favorite notification 💌",
+  "Life is brighter with you in it 🌸",
+  "You make my heart do a happy dance 🎶",
+  "You + me = my favorite equation 💕",
+  "Happiest when I see you laugh 😍",
+  "My favorite place is right next to you 🌙"
+
+    ];
+    const HER_PHOTOS = [];
+for (let i = 1; i <= 13; i++) {  // change 10 to how many images you have
+  HER_PHOTOS.push(`./img/img${i}.jpg`);
+}
+    // Add any of HER photo URLs here to prefill the gallery:
+    // const HER_PHOTOS = [
+    //   // "https://your-cdn.com/photo1.jpg",
+    //   // "https://your-cdn.com/photo2.jpg",
+    //   // "https://your-cdn.com/photo3.jpg",
+    // ];
+
+    // Optional: Plug an API key to auto-fetch “Kenny” GIFs
+    const GIPHY_API_KEY = ""; // https://developers.giphy.com/ (or leave empty)
+    const TENOR_API_KEY = ""; // https://tenor.com/gifapi (or leave empty)
+
+    // Local fallback GIF list (add your own direct .gif URLs if you don’t use an API)
+    const FALLBACK_GIFS = [
+      // Example public GIF URLs (replace with your favorites):
+      "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHEwd2hrMGczZG14bHprMWY1czZxbTZqcmp0NmJsYTZxNmoyeXg4dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/FGOyI3XnaQOrmPaonP/giphy.gif", 
+      "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGd2MHB0Zno5aHg2M3N0OHI1Z3ZlOGI0bHdhZDZwMDdxdGNndzlkMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/vezy5ZDCPSLyEtXfBf/giphy.gif",      // balloon     // party cat (placeholder)
+      "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExenU3YXh3eXBmemhqaHE0dWMzMzdnbTg3dWt0c3YyeHJoNGZva2p1ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/Mt53A7Y27PvicqDsG7/giphy.gif",     // hearts
+      "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWhzZ2xrcDd6c2h3aGd3anZ5dWF0MWxjZWtvN3Y5M2gwNWM2M3Q5ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9dg/HQCxbu48bVLsgqQlh4/giphy.gif",          // confetti burst
+      "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHEwd2hrMGczZG14bHprMWY1czZxbTZqcmp0NmJsYTZxNmoyeXg4dCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/FGOyI3XnaQOrmPaonP/giphy.gif",      // party cat (placeholder)
+    ];
+
+    /*** ⚙️ App Logic ***/
+    const nameEl = document.getElementById("name");
+    const titleEl = document.getElementById("title");
+    const typeLine = document.getElementById("typeLine");
+    const stage = document.getElementById("stage");
+    const gifImg = document.getElementById("gif");
+    const btn = document.getElementById("gifBtn");
+    const gifUrlInput = document.getElementById("gifUrl");
+    const photoUrlInput = document.getElementById("photoUrl");
+    const gallery = document.getElementById("gallery");
+    const floaters = document.getElementById("floaters");
+
+    nameEl.textContent = RECIPIENT_NAME;
+
+    // Rotate the cute type lines
+    let typeIdx = 0;
+    setInterval(() => {
+      typeIdx = (typeIdx + 1) % TYPE_LINES.length;
+      typeLine.textContent = TYPE_LINES[typeIdx];
+    }, 2600);
+
+    // Build initial gallery
+    function addPhoto(url){
+      const wrap = document.createElement("div");
+      wrap.className = "ph";
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.alt = "Her photo";
+      img.src = url;
+      wrap.appendChild(img);
+      gallery.appendChild(wrap);
+    }
+    HER_PHOTOS.forEach(addPhoto);
+    if (photoUrlInput) {
+      photoUrlInput.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" && e.target.value.trim()){
+          addPhoto(e.target.value.trim());
+          e.target.value = "";
+          popHearts();
+        }
+      });
+  }
+    if(gifUrlInput){
+      gifUrlInput.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" && e.target.value.trim()){
+          showGif(e.target.value.trim());
+          e.target.value = "";
+          celebrate();
+        }
+      });
+    }
+
+    btn.addEventListener("click", async ()=>{
+      // Try API first (if key present), else fall back
+      let url = null;
+      if (GIPHY_API_KEY){
+        url = await fetchGiphy("kenny");
+      } else if (TENOR_API_KEY){
+        url = await fetchTenor("kenny");
+      } else {
+        url = FALLBACK_GIFS[Math.floor(Math.random()*FALLBACK_GIFS.length)];
+      }
+      if (url){ showGif(url); celebrate(); }
+    });
+
+    function showGif(url){
+      gifImg.src = url;
+      gifImg.alt = "Kenny GIF";
+    }
+
+    async function fetchGiphy(query){
+      try{
+        const api = `https://api.giphy.com/v1/gifs/search?api_key=${encodeURIComponent(GIPHY_API_KEY)}&q=${encodeURIComponent(query)}&limit=50&rating=pg-13`;
+        const r = await fetch(api);
+        const j = await r.json();
+        if (!j.data?.length) return null;
+        const pick = j.data[Math.floor(Math.random()*j.data.length)];
+        return pick.images?.downsized?.url || pick.images?.original?.url || null;
+      }catch(e){ return null }
+    }
+
+    async function fetchTenor(query){
+      try{
+        const api = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${encodeURIComponent(TENOR_API_KEY)}&limit=50&media_filter=gif`;
+        const r = await fetch(api);
+        const j = await r.json();
+        const res = j.results || [];
+        if (!res.length) return null;
+        const pick = res[Math.floor(Math.random()*res.length)];
+        return pick.media_formats?.gif?.url || null;
+      }catch(e){ return null }
+    }
+
+    // Confetti + floating hearts (no external libs)
+    function celebrate(){
+      burstConfetti();
+      popHearts();
+      pulseTitle();
+    }
+
+    function pulseTitle(){
+      titleEl.style.transition = "transform .25s ease";
+      titleEl.style.transform = "scale(1.02)";
+      setTimeout(()=> titleEl.style.transform="scale(1)", 250);
+    }
+
+    function burstConfetti(){
+      const N = 80;
+      for (let i=0;i<N;i++){
+        const s = document.createElement("div");
+        s.style.position="absolute";
+        s.style.left = Math.random()*100 + "%";
+        s.style.top = "0px";
+        s.style.width = s.style.height = (6+Math.random()*8) + "px";
+        s.style.background = `hsl(${Math.random()*360}, 90%, 65%)`;
+        s.style.opacity = 0.9;
+        s.style.borderRadius = Math.random()>.5 ? "2px" : "50%";
+        s.style.transform = `translateY(0) rotate(${Math.random()*180}deg)`;
+        s.style.transition = `transform ${0.9+Math.random()*1.2}s cubic-bezier(.17,.67,.39,1.4), opacity .6s`;
+        stage.appendChild(s);
+        requestAnimationFrame(()=>{
+          s.style.transform = `translateY(${220+Math.random()*320}px) rotate(${360+Math.random()*360}deg)`;
+          s.style.opacity = 0.95;
+        });
+        setTimeout(()=> s.remove(), 1800);
+      }
+    }
+
+    function popHearts(){
+      const emojies = ["💖","💘","💝","💕","🧡","💗","💓","💞"];
+      for(let i=0;i<14;i++){
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.textContent = emojies[Math.floor(Math.random()*emojies.length)];
+        h.style.left = (Math.random()*100) + "vw";
+        h.style.bottom = "-6vh";
+        h.style.animationDelay = (Math.random()*0.8)+"s";
+        h.style.animationDuration = (3 + Math.random()*2)+"s";
+        floaters.appendChild(h);
+        setTimeout(()=> h.remove(), 5200);
+      }
+    }
+
+    // Initial sweet touch: load one gif if you put a key or have fallbacks
+    (function boot(){
+      if (FALLBACK_GIFS.length && !GIPHY_API_KEY && !TENOR_API_KEY){
+        showGif(FALLBACK_GIFS[0]);
+      }
+    })();
+  </script>
+</body>
+</html>
