@@ -11,30 +11,72 @@
     body{
       display:grid; place-items:center; background:#fff;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, sans-serif;
+      overflow:hidden; /* keep petals inside viewport */
     }
+
+    /* Title */
+    .title{
+      position:fixed; top:24px; left:50%; transform:translateX(-50%);
+      font-size:clamp(22px, 4.5vw, 46px);
+      font-weight:700; letter-spacing:.5px;
+      background: linear-gradient(90deg,#ff5fa2,#ff8c5f);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow:0 6px 18px rgba(255,95,162,.25);
+      z-index:5; text-align:center; padding:0 10px;
+    }
+
+    /* Clickable GIF card */
     .gif{
       width:min(520px, 92vw);
       border-radius:18px; overflow:hidden;
       box-shadow: 0 16px 40px #0000001a;
       cursor:pointer; position:relative;
+      z-index:2; /* above petals */
     }
     .gif img{width:100%; height:auto; display:block}
+
+    /* Falling flowers layer */
+    .petals{
+      position:fixed; inset:0;
+      pointer-events:none; z-index:1; overflow:hidden;
+    }
+    .petal{
+      position:absolute; top:-10vh;
+      font-size:18px; opacity:0.9;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.08));
+      animation: fall linear forwards, sway ease-in-out infinite;
+    }
+    @keyframes fall{
+      to{ transform: translateY(115vh) rotate(360deg); opacity:.95; }
+    }
+    @keyframes sway{
+      0%{ margin-left: -10px; }
+      50%{ margin-left: 10px; }
+      100%{ margin-left: -10px; }
+    }
+
     .hint{
       position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
       font-size:12px; color:#000; opacity:0; transition:opacity .25s ease;
       background:#fff; padding:6px 10px; border-radius:999px; box-shadow:0 8px 20px #0000001a;
-      pointer-events:none;
+      pointer-events:none; z-index:4;
     }
     .hint.show{opacity:.7}
   </style>
 </head>
 <body>
-  <!-- 🎵 Replace the src with your own MP3 if you like -->
-  <audio id="song" preload="auto">
-    <!-- Example royalty-free/placeholder link — replace with your hosted MP3 -->
+  <!-- 🎵 Put song.mp3 next to this file, or replace src with a URL -->
+  <audio id="song" preload="auto" playsinline>
     <source src="./song.mp3" type="audio/mpeg">
   </audio>
 
+  <!-- Title -->
+  <div class="title">Guess what is today</div>
+
+  <!-- Falling flowers layer -->
+  <div class="petals" id="petals"></div>
+
+  <!-- Clickable GIF -->
   <div class="gif" id="tapArea">
     <img alt="Kenny 💝" 
       src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWdwNHoxamV3czJiZWtjd2NkcDI0ZGQyY2F1N29scDJ5bTE2d25naSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/o85Cv5m1TX9OQvKS44/giphy.gif">
@@ -43,35 +85,53 @@
   <div class="hint" id="hint">🎵 Playing… opening the surprise</div>
 
   <script>
-    const NAV_DELAY_MS = 12000; // ⏱️ delay before navigating (after first tap)
+    const NAV_DELAY_MS = 12000; // delay before navigating (after first tap)
     const nextPage = 'main.html';
 
     const tapArea = document.getElementById('tapArea');
     const song = document.getElementById('song');
     const hint = document.getElementById('hint');
+    const petalsLayer = document.getElementById('petals');
 
+    // --- Flower rain ---
+    const EMOJIS = ["🌸","🌺","🌼","💐","🌷"];
+    function spawnPetal(){
+      const p = document.createElement('span');
+      p.className = 'petal';
+      p.textContent = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+      p.style.left = Math.random()*100 + 'vw';
+      const size = 18 + Math.random()*18; // px
+      p.style.fontSize = size + 'px';
+      const fallDur = 6 + Math.random()*6; // 6-12s
+      const swayDur = 2 + Math.random()*2.5; // 2-4.5s
+      p.style.animationDuration = `${fallDur}s, ${swayDur}s`;
+      p.style.animationDelay = `${Math.random()*2}s, 0s`;
+      petalsLayer.appendChild(p);
+      setTimeout(()=> p.remove(), (fallDur+2)*1000);
+    }
+    // spawn continuously but lightly
+    const PETAL_INTERVAL = setInterval(spawnPetal, 220); // ~4–5/sec
+    for(let i=0;i<12;i++) spawnPetal(); // a few immediately
+
+    // --- Audio + Navigate ---
     let triggered = false;
 
     async function handleTap(){
-      // first tap: play song, show hint, then navigate after delay
       if(!triggered){
         triggered = true;
-        try{
-          // On iOS, make sure the phone is not in silent mode
-          await song.play();
-        }catch(e){
-          // If play fails (e.g., user’s device blocks it), we still proceed
-        }
+        try{ await song.play(); }catch(e){}
         hint.classList.add('show');
         setTimeout(()=> { location.href = nextPage; }, NAV_DELAY_MS);
       }else{
-        // Any subsequent tap: navigate immediately
         location.href = nextPage;
       }
     }
 
     tapArea.addEventListener('click', handleTap);
     tapArea.addEventListener('touchend', handleTap, {passive:true});
+
+    // Optional: stop petals when leaving
+    window.addEventListener('beforeunload', ()=> clearInterval(PETAL_INTERVAL));
   </script>
 </body>
 </html>
