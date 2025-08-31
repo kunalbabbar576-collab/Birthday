@@ -12,9 +12,10 @@
       display:grid; place-items:center; background:#fff;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, sans-serif;
       overflow:hidden; /* keep petals inside viewport */
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
-    /* Title */
     .title{
       position:fixed; top:24px; left:50%; transform:translateX(-50%);
       font-size:clamp(22px, 4.5vw, 46px);
@@ -25,17 +26,15 @@
       z-index:5; text-align:center; padding:0 10px;
     }
 
-    /* Clickable GIF card */
     .gif{
       width:min(520px, 92vw);
       border-radius:18px; overflow:hidden;
       box-shadow: 0 16px 40px #0000001a;
       cursor:pointer; position:relative;
-      z-index:2; /* above petals */
+      z-index:2;
     }
     .gif img{width:100%; height:auto; display:block}
 
-    /* Falling flowers layer */
     .petals{
       position:fixed; inset:0;
       pointer-events:none; z-index:1; overflow:hidden;
@@ -70,13 +69,10 @@
     <source src="./song.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- Title -->
   <div class="title">Guess what it is today??</div>
 
-  <!-- Falling flowers layer -->
   <div class="petals" id="petals"></div>
 
-  <!-- Clickable GIF -->
   <div class="gif" id="tapArea">
     <img alt="Kenny 💝" 
       src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbWdwNHoxamV3czJiZWtjd2NkcDI0ZGQyY2F1N29scDJ5bTE2d25naSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/o85Cv5m1TX9OQvKS44/giphy.gif">
@@ -85,7 +81,7 @@
   <div class="hint" id="hint">🎵 Playing… opening the surprise</div>
 
   <script>
-    const NAV_DELAY_MS = 12000; // delay before navigating (after first tap)
+    const NAV_DELAY_MS = 12000; // wait ~12s before navigating
     const nextPage = 'main.html';
 
     const tapArea = document.getElementById('tapArea');
@@ -109,26 +105,30 @@
       petalsLayer.appendChild(p);
       setTimeout(()=> p.remove(), (fallDur+2)*1000);
     }
-    // spawn continuously but lightly
-    const PETAL_INTERVAL = setInterval(spawnPetal, 220); // ~4–5/sec
-    for(let i=0;i<12;i++) spawnPetal(); // a few immediately
+    const PETAL_INTERVAL = setInterval(spawnPetal, 220);
+    for(let i=0;i<12;i++) spawnPetal();
 
-    // --- Audio + Navigate ---
+    // --- Audio + delayed navigate ---
     let triggered = false;
+    let navTimer = null;
 
-    async function handleTap(){
-      if(!triggered){
-        triggered = true;
-        try{ await song.play(); }catch(e){}
-        hint.classList.add('show');
-        setTimeout(()=> { location.href = nextPage; }, NAV_DELAY_MS);
-      }else{
-        location.href = nextPage;
+    async function handleFirstTap(ev){
+      if (triggered) return;          // ignore subsequent taps
+      triggered = true;
+
+      try {
+        song.currentTime = 0;
+        await song.play();            // user gesture → allowed on iOS/Android
+      } catch(e) {
+        // If it fails, still proceed with delay
       }
+
+      hint.classList.add('show');
+      navTimer = setTimeout(()=> { location.href = nextPage; }, NAV_DELAY_MS);
     }
 
-    tapArea.addEventListener('click', handleTap);
-    tapArea.addEventListener('touchend', handleTap, {passive:true});
+    // Use ONE pointer event to avoid the mobile "touchend + click" double-fire
+    tapArea.addEventListener('pointerup', handleFirstTap, {passive:true});
 
     // Optional: stop petals when leaving
     window.addEventListener('beforeunload', ()=> clearInterval(PETAL_INTERVAL));
