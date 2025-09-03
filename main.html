@@ -210,6 +210,90 @@
       backdrop-filter: blur(3px);
     }
     .lb-close:active{ transform: translateY(1px) }
+
+    /* ===== Floating letter button ===== */
+    .fab-letter{
+      position: fixed; right:16px; bottom:16px;
+      z-index: 10050;
+      width:56px; height:56px; border-radius:16px; border:none; cursor:pointer;
+      font-size:28px; line-height:56px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#fff; box-shadow: 0 14px 30px rgba(255,95,162,.35), 0 6px 16px rgba(0,0,0,.15);
+      transition: transform .08s ease;
+    }
+    .fab-letter:active{ transform: translateY(1px) }
+
+    /* ===== Floating audio button (NEW) ===== */
+    .fab-audio{
+      position: fixed; left:16px; bottom:16px;
+      z-index: 10050;
+      width:56px; height:56px; border-radius:16px; border:none; cursor:pointer;
+      font-size:28px; line-height:56px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#fff; box-shadow: 0 14px 30px rgba(255,95,162,.35), 0 6px 16px rgba(0,0,0,.15);
+      transition: transform .08s ease;
+    }
+    .fab-audio:active{ transform: translateY(1px) }
+
+    /* ===== Letter modal ===== */
+    .letter-modal{
+      position: fixed; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      background: rgba(30, 12, 24, .55);
+      backdrop-filter: blur(2px);
+      z-index: 10060;
+      animation: lbFade .2s ease;
+    }
+    .letter-modal.show{ display:flex; }
+
+    .letter-card{
+      position: relative;
+      width: min(92vw, 760px);
+      max-height: 86vh;
+      border-radius: 18px;
+      padding: 26px 22px;
+      overflow: auto;
+      box-shadow: 0 30px 80px rgba(0,0,0,.35), 0 8px 22px rgba(0,0,0,.2);
+      background:
+        radial-gradient(140% 100% at 10% 0%, #fff7fb 0%, #fff 40%),
+        radial-gradient(140% 100% at 90% 100%, #fff3e8 0%, #fff 40%);
+      /* light paper lines */
+      background-image:
+        repeating-linear-gradient(#0000, #0000 36px, #ffe9f6 37px, #0000 38px),
+        radial-gradient(140% 100% at 10% 0%, #fff7fb 0%, #fff 40%),
+        radial-gradient(140% 100% at 90% 100%, #fff3e8 0%, #fff 40%);
+      transform: translateY(8px) scale(.98);
+      opacity: 0;
+      animation: letterIn .35s ease forwards;
+    }
+    @keyframes letterIn{ to{ transform: translateY(0) scale(1); opacity:1 } }
+
+    .letter-title{
+      font-family: "Dancing Script", cursive;
+      font-size: clamp(28px, 4.4vw, 44px);
+      margin: 4px 0 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .letter-body{
+      text-align: left;
+      font-size: clamp(15px, 2.4vw, 18px);
+      line-height: 1.75;
+      color: #303030;
+    }
+    .letter-sign{
+      margin-top: 18px;
+      font-family: "Dancing Script", cursive;
+      font-size: clamp(22px, 3.8vw, 32px);
+      text-align: right;
+    }
+    .letter-close{
+      position:absolute; top:10px; right:10px;
+      border:none; background:#0000007a; color:#fff; width:38px; height:38px;
+      border-radius:10px; font-size:20px; line-height:38px; cursor:pointer;
+      backdrop-filter: blur(3px);
+    }
+    .letter-close:active{ transform: translateY(1px) }
   </style>
 </head>
 <body>
@@ -245,11 +329,30 @@
     </div>
   </div>
 
-  <!-- Lightbox -->
+  <!-- Lightbox (photos) -->
   <div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
     <div class="lightbox-inner">
       <img class="lightbox-img" id="lightboxImg" alt="Expanded photo" />
       <button class="lb-close" id="lbClose" aria-label="Close">×</button>
+    </div>
+  </div>
+
+  <!-- Floating letter button -->
+  <button class="fab-letter" id="letterBtn" aria-label="Open letter">💌</button>
+  <!-- NEW: Floating audio button -->
+  <button class="fab-audio" id="audioBtn" aria-label="Play music">▶️</button>
+
+  <!-- Letter modal -->
+  <div class="letter-modal" id="letterModal" aria-modal="true" role="dialog" aria-hidden="true">
+    <div class="letter-card" role="document">
+      <button class="letter-close" id="letterClose" aria-label="Close">×</button>
+      <div class="letter-title">To my Bebe, <span id="letterName">Nitika</span> ✨</div>
+      <div class="letter-body">
+        <p>Happy birthday, beautiful sunshine. Today and every day, I’m grateful you exist. You light up rooms, playlists, timelines<em> and</em> my whole heart.</p>
+        <p>I hope this year and more ahead to come brings you silly laughs, easy mornings, and the kind of joy that sneaks up on you in little moments. You deserve all the softness in the world.</p>
+        <p>Thank you for being my favorite person, my calm, my chaos, and my forever crush. I love you more than I can put in a webpage. 💖</p>
+        <p class="letter-sign">— with all my love</p>
+      </div>
     </div>
   </div>
 
@@ -265,13 +368,10 @@
     ];
     for (let i = TYPE_LINES.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [TYPE_LINES[i], TYPE_LINES[j]] = [TYPE_LINES[j], TYPE_LINES[i]]; }
 
-    const HER_PHOTOS = []; 
-    for (let i = 1; i <= 25; i++) 
-    {
-      if(i==23)
-        continue;
+    const HER_PHOTOS = [];
+    for (let i = 1; i <= 26; i++){
+      if (i === 23) continue; // your exception
       HER_PHOTOS.push(`./img/img${i}.jpg`);
-
     }
     const FALLBACK_GIFS = [
       "https://media.giphy.com/media/8PTT2a7OoGe2gJTh08/giphy.gif",
@@ -325,7 +425,17 @@
     const lightboxImg = document.getElementById('lightboxImg');
     const lbClose = document.getElementById('lbClose');
 
+    // Letter elements
+    const letterBtn   = document.getElementById('letterBtn');
+    const letterModal = document.getElementById('letterModal');
+    const letterClose = document.getElementById('letterClose');
+    const letterName  = document.getElementById('letterName');
+
+    // NEW: audio button
+    const audioBtn = document.getElementById('audioBtn');
+
     nameEl.textContent = RECIPIENT_NAME;
+    if (letterName) letterName.textContent = RECIPIENT_NAME.charAt(0) + RECIPIENT_NAME.slice(1).toLowerCase();
 
     /* Click-anywhere to start music (once) */
     function startMusicOnce(){
@@ -333,10 +443,27 @@
       ['pointerdown','click','touchend','keydown'].forEach(evt=>{
         document.removeEventListener(evt, startMusicOnce, {capture:true});
       });
+      setAudioIcon(); // update icon after auto-start
     }
     ['pointerdown','click','touchend','keydown'].forEach(evt=>{
       document.addEventListener(evt, startMusicOnce, {once:true, passive:true, capture:true});
     });
+
+    /* NEW: play/pause control */
+    function setAudioIcon(){
+      if (!audioBtn) return;
+      audioBtn.textContent = bgm.paused ? '▶️' : '⏸️';
+      audioBtn.setAttribute('aria-label', bgm.paused ? 'Play music' : 'Pause music');
+    }
+    if (audioBtn){
+      audioBtn.addEventListener('click', async ()=>{
+        try{
+          if (bgm.paused){ await bgm.play(); } else { bgm.pause(); }
+        }catch(e){}
+        setAudioIcon();
+      });
+      setAudioIcon();
+    }
 
     /* Sparkles behind the title */
     function sparkleBurst(durationMs=1600){
@@ -494,7 +621,7 @@
       if(e.target === lightbox || e.target.id === 'lbClose') closeLightbox();
     });
     document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape') closeLightbox();
+      if(e.key === 'Escape') { closeLightbox(); closeLetter(); }
     });
 
     // GIF button: show new gif + burst hearts
@@ -506,6 +633,22 @@
 
     // Initial GIF
     gifImg.src = FALLBACK_GIFS[0];
+
+    // ===== Letter modal logic =====
+    function openLetter(){
+      letterModal.classList.add('show');
+      letterModal.setAttribute('aria-hidden','false');
+      // add a tiny sprinkle on open
+      popHearts();
+    }
+    function closeLetter(){
+      letterModal.classList.remove('show');
+      letterModal.setAttribute('aria-hidden','true');
+    }
+    letterBtn.addEventListener('click', openLetter);
+    letterModal.addEventListener('click', (e)=>{
+      if(e.target === letterModal || e.target.id === 'letterClose') closeLetter();
+    });
   </script>
 </body>
 </html>
